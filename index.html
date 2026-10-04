@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HR Management System</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body { min-height: 100vh; overflow-x: hidden; }
+    #sidebar { min-height: 100vh; background-color: #212529; }
+    .nav-link.active { background-color: #0d6efd !important; }
+    .app-view { display: none; }
+    .app-view.active { display: block; }
+  </style>
+</head>
+<body class="bg-light">
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar Navigation -->
+      <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar collapse text-white p-3">
+        <div class="position-sticky">
+          <div class="text-center py-3">
+            <i class="bi bi-building-fill-gear fs-2 text-info"></i>
+            <h5 class="mt-2 mb-0 fw-bold">HR Management</h5>
+            <small class="text-muted">Enterprise System</small>
+          </div>
+          <hr class="border-secondary">
+          <ul class="nav flex-column nav-pills" id="sidebarNav">
+            <li class="nav-item mb-1"><a href="#" class="nav-link text-white active" data-page="Dashboard"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
+            <li class="nav-item mb-1"><a href="#" class="nav-link text-white" data-page="Employees"><i class="bi bi-people me-2"></i> Employee Master</a></li>
+            <li class="nav-item mb-1"><a href="#" class="nav-link text-white" data-page="Transfers"><i class="bi bi-arrow-left-right me-2"></i> Transfers</a></li>
+            <li class="nav-item mb-1"><a href="#" class="nav-link text-white" data-page="Leaves"><i class="bi bi-calendar-check me-2"></i> Leaves</a></li>
+            <li class="nav-item mb-1"><a href="#" class="nav-link text-white" data-page="Joinings"><i class="bi bi-person-plus me-2"></i> New Joinings</a></li>
+            <li class="nav-item mb-1"><a href="#" class="nav-link text-white" data-page="History"><i class="bi bi-clock-history me-2"></i> Employee History</a></li>
+            <li class="nav-item mb-1"><a href="#" class="nav-link text-white" data-page="Reports"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reports</a></li>
+            <li class="nav-item mb-1"><a href="#" class="nav-link text-white" data-page="Settings"><i class="bi bi-gear me-2"></i> Settings & Setup</a></li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- Main Content Area -->
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+        <!-- Top Navbar -->
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <h1 class="h2" id="pageTitle">Dashboard</h1>
+          <div class="dropdown">
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-person-circle me-1"></i> <span id="currentUserDisplay">Admin User</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li><a class="dropdown-item" href="#" onclick="runSystemSetup()"><i class="bi bi-database-add me-2"></i> Run Setup</a></li>
+              <li><a class="dropdown-item" href="#" onclick="switchPage('Audit')"><i class="bi bi-shield-check me-2"></i> Audit Logs</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- VIEWS CONTAINER -->
+        <div id="app-view-container">
+
+          <!-- 1. DASHBOARD VIEW -->
+          <div id="view-Dashboard" class="app-view active">
+            <div class="row mb-4">
+              <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card shadow-sm border-0 border-top border-4 border-primary p-3">
+                  <div class="text-muted text-uppercase small fw-bold">Total Employees</div>
+                  <div class="h4 mb-0 fw-bold" id="dashTotalEmployees">-</div>
+                </div>
+              </div>
+              <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card shadow-sm border-0 border-top border-4 border-success p-3">
+                  <div class="text-muted text-uppercase small fw-bold">Active Transfers</div>
+                  <div class="h4 mb-0 fw-bold" id="dashActiveTransfers">-</div>
+                </div>
+              </div>
+              <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card shadow-sm border-0 border-top border-4 border-info p-3">
+                  <div class="text-muted text-uppercase small fw-bold">Pending Leaves</div>
+                  <div class="h4 mb-0 fw-bold" id="dashPendingLeaves">-</div>
+                </div>
+              </div>
+              <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card shadow-sm border-0 border-top border-4 border-warning p-3">
+                  <div class="text-muted text-uppercase small fw-bold">New Joinings</div>
+                  <div class="h4 mb-0 fw-bold" id="dashNewJoinings">-</div>
+                </div>
+              </div>
+            </div>
+            <div class="card shadow-sm">
+              <div class="card-header bg-white py-3">
+                <h6 class="m-0 fw-bold text-primary"><i class="bi bi-list-nested me-1"></i> Recent Employees</h6>
+              </div>
+              <div class="card-body table-responsive">
+                <table class="table table-hover">
+                  <thead><tr><th>Emp ID</th><th>Name</th><th>Unit</th><th>Designation</th><th>Joining Date</th></tr></thead>
+                  <tbody id="dashEmployeesTbody"><tr><td colspan="5" class="text-center">Loading...</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. EMPLOYEES VIEW -->
+          <div id="view-Employees" class="app-view">
+            <div class="d-flex justify-content-between mb-3">
+              <h4>Employee Master Directory</h4>
+              <button class="btn btn-primary btn-sm" onclick="openEmployeeModal()"><i class="bi bi-person-plus me-1"></i> Add Employee</button>
+            </div>
+            <div class="card shadow-sm">
+              <div class="card-body table-responsive">
+                <table class="table table-hover align-middle">
+                  <thead><tr><th>Emp ID</th><th>Name</th><th>Unit</th><th>Designation</th><th>Joining Date</th></tr></thead>
+                  <tbody id="employeesTbody"><tr><td colspan="5" class="text-center">Loading...</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. TRANSFERS VIEW -->
+          <div id="view-Transfers" class="app-view">
+            <h4>Employee Transfers</h4>
+            <div class="card shadow-sm p-4"><p class="text-muted mb-0">Transfer management module loaded successfully.</p></div>
+          </div>
+
+          <!-- 4. LEAVES VIEW -->
+          <div id="view-Leaves" class="app-view">
+            <h4>Leave Management</h4>
+            <div class="card shadow-sm p-4"><p class="text-muted mb-0">Leave tracking module loaded successfully.</p></div>
+          </div>
+
+          <!-- 5. JOININGS VIEW -->
+          <div id="view-Joinings" class="app-view">
+            <h4>New Joinings</h4>
+            <div class="card shadow-sm p-4"><p class="text-muted mb-0">New joining module loaded successfully.</p></div>
+          </div>
+
+          <!-- 6. HISTORY VIEW -->
+          <div id="view-History" class="app-view">
+            <h4>Employee History</h4>
+            <div class="card shadow-sm p-4"><p class="text-muted mb-0">History timeline module loaded successfully.</p></div>
+          </div>
+
+          <!-- 7. REPORTS VIEW -->
+          <div id="view-Reports" class="app-view">
+            <h4>Reports & Analytics</h4>
+            <div class="card shadow-sm p-4"><p class="text-muted mb-0">Reports module loaded successfully.</p></div>
+          </div>
+
+          <!-- 8. SETTINGS VIEW -->
+          <div id="view-Settings" class="app-view">
+            <h4>Settings & System Setup</h4>
+            <div class="card shadow-sm p-4">
+              <p>Initialize database sheets, folders, and default configurations.</p>
+              <button class="btn btn-success" onclick="runSystemSetup()"><i class="bi bi-database-gear me-1"></i> Run System Setup</button>
+            </div>
+          </div>
+
+          <!-- 9. AUDIT VIEW -->
+          <div id="view-Audit" class="app-view">
+            <h4>System Audit Logs</h4>
+            <div class="card shadow-sm p-4"><p class="text-muted mb-0">Audit log viewer ready.</p></div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Employee Modal -->
+  <div class="modal fade" id="employeeModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Employee Record</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="employeeForm">
+            <input type="hidden" id="empRecordID">
+            <div class="mb-3"><label class="form-label">Employee ID</label><input type="text" class="form-control" id="empEmployeeID" required></div>
+            <div class="mb-3"><label class="form-label">Employee Name</label><input type="text" class="form-control" id="empEmployeeName" required></div>
+            <div class="mb-3"><label class="form-label">Unit</label><input type="text" class="form-control" id="empUnit"></div>
+            <div class="mb-3"><label class="form-label">Designation</label><input type="text" class="form-control" id="empDesignation"></div>
+            <div class="mb-3"><label class="form-label">Joining Date</label><input type="date" class="form-control" id="empJoiningDate"></div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="saveEmpBtn" onclick="saveEmployeeRecord()">Save Record</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // REPLACE WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
+    const API_URL = 'https://script.google.com/macros/s/AKfycbz7PD-T39OOO3ILJdfeaVxYnKBw1jap7BUXdBOApI2_9F7I9EuP2LcwO_OiKxH7GaM/exec';
+
+    document.addEventListener('DOMContentLoaded', function() {
+      initNavigation();
+      loadDashboard();
+    });
+
+    function initNavigation() {
+      document.querySelectorAll('#sidebarNav .nav-link').forEach(function(link) {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          document.querySelectorAll('#sidebarNav .nav-link').forEach(l => l.classList.remove('active'));
+          this.classList.add('active');
+          var page = this.getAttribute('data-page');
+          switchPage(page);
+        });
+      });
+    }
+
+    function switchPage(pageName) {
+      document.getElementById('pageTitle').innerText = pageName;
+      document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+      var target = document.getElementById('view-' + pageName);
+      if (target) target.classList.add('active');
+
+      if (pageName === 'Dashboard') loadDashboard();
+      else if (pageName === 'Employees') loadEmployees();
+    }
+
+    function loadDashboard() {
+      fetch(API_URL + '?action=getDashboardMetrics')
+        .then(res => res.json())
+        .then(res => {
+          if (res.success && res.data) {
+            document.getElementById('dashTotalEmployees').innerText = res.data.totalEmployees;
+            document.getElementById('dashActiveTransfers').innerText = res.data.activeTransfers;
+            document.getElementById('dashPendingLeaves').innerText = res.data.pendingLeaves;
+            document.getElementById('dashNewJoinings').innerText = res.data.newJoinings;
+
+            var tbody = document.getElementById('dashEmployeesTbody');
+            tbody.innerHTML = '';
+            if (!res.data.recentEmployees || res.data.recentEmployees.length === 0) {
+              tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No records found.</td></tr>';
+              return;
+            }
+            res.data.recentEmployees.forEach(emp => {
+              tbody.innerHTML += `<tr><td>${emp.EmployeeID||''}</td><td>${emp.EmployeeName||''}</td><td>${emp.Unit||''}</td><td>${emp.Designation||''}</td><td>${emp.JoiningDate||''}</td></tr>`;
+            });
+          }
+        })
+        .catch(err => console.error(err));
+    }
+
+    function loadEmployees() {
+      fetch(API_URL + '?action=getEmployees')
+        .then(res => res.json())
+        .then(res => {
+          var tbody = document.getElementById('employeesTbody');
+          tbody.innerHTML = '';
+          if (!res.success || !res.data || res.data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No records found.</td></tr>';
+            return;
+          }
+          res.data.forEach(emp => {
+            tbody.innerHTML += `<tr><td>${emp.EmployeeID||''}</td><td>${emp.EmployeeName||''}</td><td>${emp.Unit||''}</td><td>${emp.Designation||''}</td><td>${emp.JoiningDate||''}</td></tr>`;
+          });
+        })
+        .catch(err => console.error(err));
+    }
+
+    function openEmployeeModal() {
+      document.getElementById('employeeForm').reset();
+      document.getElementById('empRecordID').value = '';
+      new bootstrap.Modal(document.getElementById('employeeModal')).show();
+    }
+
+    function saveEmployeeRecord() {
+      var btn = document.getElementById('saveEmpBtn');
+      btn.disabled = true;
+      btn.innerText = 'Saving...';
+
+      var data = {
+        RecordID: document.getElementById('empRecordID').value,
+        EmployeeID: document.getElementById('empEmployeeID').value,
+        EmployeeName: document.getElementById('empEmployeeName').value,
+        Unit: document.getElementById('empUnit').value,
+        Designation: document.getElementById('empDesignation').value,
+        JoiningDate: document.getElementById('empJoiningDate').value
+      };
+
+      fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'saveEmployee', data: data })
+      })
+      .then(res => res.json())
+      .then(res => {
+        btn.disabled = false;
+        btn.innerText = 'Save Record';
+        if (res.success) {
+          bootstrap.Modal.getInstance(document.getElementById('employeeModal')).hide();
+          loadEmployees();
+          loadDashboard();
+        } else {
+          alert('Error: ' + res.message);
+        }
+      })
+      .catch(err => {
+        btn.disabled = false;
+        btn.innerText = 'Save Record';
+        alert('Network error occurred.');
+      });
+    }
+
+    function runSystemSetup() {
+      fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'setupSystem' })
+      })
+      .then(res => res.json())
+      .then(res => {
+        alert(res.message);
+      })
+      .catch(err => alert('Setup failed.'));
+    }
+  </script>
+</body>
+</html>
