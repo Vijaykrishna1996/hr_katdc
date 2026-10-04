@@ -12,10 +12,37 @@
     .nav-link.active { background-color: #0d6efd !important; }
     .app-view { display: none; }
     .app-view.active { display: block; }
+    #loginScreen { min-height: 100vh; background: #f8f9fa; display: flex; align-items: center; justify-content: center; }
   </style>
 </head>
 <body class="bg-light">
-  <div class="container-fluid">
+
+  <!-- LOGIN SCREEN -->
+  <div id="loginScreen">
+    <div class="card shadow p-4" style="width: 100%; max-width: 400px;">
+      <div class="text-center mb-4">
+        <i class="bi bi-building-fill-gear fs-1 text-primary"></i>
+        <h4 class="fw-bold mt-2">HR Management System</h4>
+        <p class="text-muted small">Please sign in to continue</p>
+      </div>
+      <div id="loginError" class="alert alert-danger d-none py-2 small"></div>
+      <form onsubmit="handleLogin(event)">
+        <div class="mb-3">
+          <label class="form-label">Username</label>
+          <input type="text" class="form-control" id="loginUsername" required placeholder="admin">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-control" id="loginPassword" required placeholder="admin123">
+        </div>
+        <button type="submit" class="btn btn-primary w-100" id="loginBtn">Sign In</button>
+      </form>
+      <div class="text-center mt-3 text-muted small">Default: admin / admin123</div>
+    </div>
+  </div>
+
+  <!-- MAIN APP CONTAINER (Hidden until login) -->
+  <div id="mainAppContainer" class="container-fluid d-none">
     <div class="row">
       <!-- Sidebar Navigation -->
       <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar collapse text-white p-3">
@@ -41,16 +68,16 @@
 
       <!-- Main Content Area -->
       <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
-        <!-- Top Navbar -->
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
           <h1 class="h2" id="pageTitle">Dashboard</h1>
           <div class="dropdown">
             <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="bi bi-person-circle me-1"></i> <span id="currentUserDisplay">Admin User</span>
+              <i class="bi bi-person-circle me-1"></i> <span id="currentUserDisplay">Admin</span>
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
               <li><a class="dropdown-item" href="#" onclick="runSystemSetup()"><i class="bi bi-database-add me-2"></i> Run Setup</a></li>
-              <li><a class="dropdown-item" href="#" onclick="switchPage('Audit')"><i class="bi bi-shield-check me-2"></i> Audit Logs</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i class="bi bi-box-arrow-right me-2"></i> Sign Out</a></li>
             </ul>
           </div>
         </div>
@@ -117,32 +144,53 @@
 
           <!-- 3. TRANSFERS VIEW -->
           <div id="view-Transfers" class="app-view">
-            <h4>Employee Transfers</h4>
-            <div class="card shadow-sm p-4"><p class="text-muted mb-0">Transfer management module loaded successfully.</p></div>
+            <h4 class="mb-3">Employee Transfers</h4>
+            <div class="card shadow-sm">
+              <div class="card-body table-responsive">
+                <table class="table table-hover align-middle">
+                  <thead><tr><th>Transfer ID</th><th>Emp ID</th><th>Employee Name</th><th>From Unit</th><th>To Unit</th><th>Status</th></tr></thead>
+                  <tbody id="transfersTbody"><tr><td colspan="6" class="text-center">Loading transfers...</td></tr></tbody>
+                </table>
+              </div>
+            </div>
           </div>
 
           <!-- 4. LEAVES VIEW -->
           <div id="view-Leaves" class="app-view">
-            <h4>Leave Management</h4>
-            <div class="card shadow-sm p-4"><p class="text-muted mb-0">Leave tracking module loaded successfully.</p></div>
+            <h4 class="mb-3">Leave Management</h4>
+            <div class="card shadow-sm">
+              <div class="card-body table-responsive">
+                <table class="table table-hover align-middle">
+                  <thead><tr><th>Leave ID</th><th>Emp ID</th><th>Employee Name</th><th>Leave Type</th><th>From Date</th><th>Status</th></tr></thead>
+                  <tbody id="leavesTbody"><tr><td colspan="6" class="text-center">Loading leaves...</td></tr></tbody>
+                </table>
+              </div>
+            </div>
           </div>
 
           <!-- 5. JOININGS VIEW -->
           <div id="view-Joinings" class="app-view">
-            <h4>New Joinings</h4>
-            <div class="card shadow-sm p-4"><p class="text-muted mb-0">New joining module loaded successfully.</p></div>
+            <h4 class="mb-3">New Joinings</h4>
+            <div class="card shadow-sm">
+              <div class="card-body table-responsive">
+                <table class="table table-hover align-middle">
+                  <thead><tr><th>Joining ID</th><th>Employee Name</th><th>Unit</th><th>Designation</th><th>Joining Date</th></tr></thead>
+                  <tbody id="joiningsTbody"><tr><td colspan="5" class="text-center">Loading new joinings...</td></tr></tbody>
+                </table>
+              </div>
+            </div>
           </div>
 
           <!-- 6. HISTORY VIEW -->
           <div id="view-History" class="app-view">
             <h4>Employee History</h4>
-            <div class="card shadow-sm p-4"><p class="text-muted mb-0">History timeline module loaded successfully.</p></div>
+            <div class="card shadow-sm p-4"><p class="text-muted mb-0">History timeline module ready.</p></div>
           </div>
 
           <!-- 7. REPORTS VIEW -->
           <div id="view-Reports" class="app-view">
             <h4>Reports & Analytics</h4>
-            <div class="card shadow-sm p-4"><p class="text-muted mb-0">Reports module loaded successfully.</p></div>
+            <div class="card shadow-sm p-4"><p class="text-muted mb-0">Reports module ready.</p></div>
           </div>
 
           <!-- 8. SETTINGS VIEW -->
@@ -194,12 +242,63 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     // REPLACE WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
-    const API_URL = 'https://script.google.com/macros/s/AKfycbz7PD-T39OOO3ILJdfeaVxYnKBw1jap7BUXdBOApI2_9F7I9EuP2LcwO_OiKxH7GaM/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwAyHQ-5O8oI1sl9RiRFhpZ37SsXQ_qt3PDojXXCkX6m8xT5JEMLv3hoGal76ZPOmIX/exec';
 
     document.addEventListener('DOMContentLoaded', function() {
+      // Check if already logged in via sessionStorage
+      if (sessionStorage.getItem('isLoggedIn') === 'true') {
+        showMainApp();
+      }
+    });
+
+    function handleLogin(e) {
+      e.preventDefault();
+      var user = document.getElementById('loginUsername').value;
+      var pass = document.getElementById('loginPassword').value;
+      var btn = document.getElementById('loginBtn');
+      var errDiv = document.getElementById('loginError');
+      
+      btn.disabled = true;
+      btn.innerText = 'Signing in...';
+      errDiv.classList.add('d-none');
+
+      fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'login', username: user, password: pass })
+      })
+      .then(res => res.json())
+      .then(res => {
+        btn.disabled = false;
+        btn.innerText = 'Sign In';
+        if (res.success) {
+          sessionStorage.setItem('isLoggedIn', 'true');
+          sessionStorage.setItem('userName', res.data.name);
+          showMainApp();
+        } else {
+          errDiv.innerText = res.message || 'Invalid login credentials.';
+          errDiv.classList.remove('d-none');
+        }
+      })
+      .catch(err => {
+        btn.disabled = false;
+        btn.innerText = 'Sign In';
+        errDiv.innerText = 'Network error during login.';
+        errDiv.classList.remove('d-none');
+      });
+    }
+
+    function showMainApp() {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('mainAppContainer').classList.remove('d-none');
+      document.getElementById('currentUserDisplay').innerText = sessionStorage.getItem('userName') || 'Admin';
       initNavigation();
       loadDashboard();
-    });
+    }
+
+    function logout() {
+      sessionStorage.clear();
+      window.location.reload();
+    }
 
     function initNavigation() {
       document.querySelectorAll('#sidebarNav .nav-link').forEach(function(link) {
@@ -221,6 +320,9 @@
 
       if (pageName === 'Dashboard') loadDashboard();
       else if (pageName === 'Employees') loadEmployees();
+      else if (pageName === 'Transfers') loadTransfers();
+      else if (pageName === 'Leaves') loadLeaves();
+      else if (pageName === 'Joinings') loadJoinings();
     }
 
     function loadDashboard() {
@@ -254,11 +356,62 @@
           var tbody = document.getElementById('employeesTbody');
           tbody.innerHTML = '';
           if (!res.success || !res.data || res.data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No records found.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No employee records found.</td></tr>';
             return;
           }
           res.data.forEach(emp => {
             tbody.innerHTML += `<tr><td>${emp.EmployeeID||''}</td><td>${emp.EmployeeName||''}</td><td>${emp.Unit||''}</td><td>${emp.Designation||''}</td><td>${emp.JoiningDate||''}</td></tr>`;
+          });
+        })
+        .catch(err => console.error(err));
+    }
+
+    function loadTransfers() {
+      fetch(API_URL + '?action=getTransfers')
+        .then(res => res.json())
+        .then(res => {
+          var tbody = document.getElementById('transfersTbody');
+          tbody.innerHTML = '';
+          if (!res.success || !res.data || res.data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No transfer records found.</td></tr>';
+            return;
+          }
+          res.data.forEach(t => {
+            tbody.innerHTML += `<tr><td>${t.TransferID||''}</td><td>${t.EmployeeID||''}</td><td>${t.EmployeeName||''}</td><td>${t.FromUnit||''}</td><td>${t.ToUnit||''}</td><td><span class="badge bg-secondary">${t.Status||'Pending'}</span></td></tr>`;
+          });
+        })
+        .catch(err => console.error(err));
+    }
+
+    function loadLeaves() {
+      fetch(API_URL + '?action=getLeaves')
+        .then(res => res.json())
+        .then(res => {
+          var tbody = document.getElementById('leavesTbody');
+          tbody.innerHTML = '';
+          if (!res.success || !res.data || res.data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No leave records found.</td></tr>';
+            return;
+          }
+          res.data.forEach(l => {
+            tbody.innerHTML += `<tr><td>${l.LeaveID||''}</td><td>${l.EmployeeID||''}</td><td>${l.EmployeeName||''}</td><td>${l.LeaveType||''}</td><td>${l.FromDate||''}</td><td><span class="badge bg-secondary">${l.Status||'Pending'}</span></td></tr>`;
+          });
+        })
+        .catch(err => console.error(err));
+    }
+
+    function loadJoinings() {
+      fetch(API_URL + '?action=getJoinings')
+        .then(res => res.json())
+        .then(res => {
+          var tbody = document.getElementById('joiningsTbody');
+          tbody.innerHTML = '';
+          if (!res.success || !res.data || res.data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No new joining records found.</td></tr>';
+            return;
+          }
+          res.data.forEach(j => {
+            tbody.innerHTML += `<tr><td>${j.JoiningID||''}</td><td>${j.EmployeeName||''}</td><td>${j.Unit||''}</td><td>${j.Designation||''}</td><td>${j.JoiningDate||''}</td></tr>`;
           });
         })
         .catch(err => console.error(err));
